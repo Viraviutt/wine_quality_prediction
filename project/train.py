@@ -106,52 +106,48 @@ if __name__ == "__main__":
     parser.add_argument("--random_state", type=int, default=42)
     args = parser.parse_args()
 
-    mlflow.set_experiment("Wine_Quality_Regression_GenAI")
+    # --- 4. Entrenamiento del Modelo ---
+    rf = RandomForestRegressor(
+        n_estimators=args.n_estimators,
+        max_depth=args.max_depth,
+        random_state=args.random_state
+    )
+    rf.fit(X_train, y_train)
 
-    # --- 3. Inicio del Run con MLFlow ---
-    with mlflow.start_run():
-        # --- 4. Entrenamiento del Modelo ---
-        rf = RandomForestRegressor(
-            n_estimators=args.n_estimators,
-            max_depth=args.max_depth,
-            random_state=args.random_state
-        )
-        rf.fit(X_train, y_train)
+    # --- 5. Predicciones ---
+    y_pred = rf.predict(X_test)
 
-        # --- 5. Predicciones ---
-        y_pred = rf.predict(X_test)
+    # --- 6. Evaluación de Métricas ---
+    rmse, mae, r2 = eval_metrics(y_test, y_pred)
+    print(f"RMSE: {rmse}, MAE: {mae}, R2: {r2}")
 
-        # --- 6. Evaluación de Métricas ---
-        rmse, mae, r2 = eval_metrics(y_test, y_pred)
-        print(f"RMSE: {rmse}, MAE: {mae}, R2: {r2}")
+    # mlflow.log_param("n_estimators", args.n_estimators)
+    # mlflow.log_param("max_depth", args.max_depth)
+    # mlflow.log_param("random_state", args.random_state)
+    mlflow.log_metric("rmse", rmse)
+    mlflow.log_metric("mae", mae)
+    mlflow.log_metric("r2", r2)
 
-        mlflow.log_param("n_estimators", args.n_estimators)
-        mlflow.log_param("max_depth", args.max_depth)
-        mlflow.log_param("random_state", args.random_state)
-        mlflow.log_metric("rmse", rmse)
-        mlflow.log_metric("mae", mae)
-        mlflow.log_metric("r2", r2)
+    # --- 7. Importancia de Características ---
+    feature_importances = sorted(
+        zip(X.columns, rf.feature_importances_),
+        key=lambda x: x[1],
+        reverse=True
+    )
 
-        # --- 7. Importancia de Características ---
-        feature_importances = sorted(
-            zip(X.columns, rf.feature_importances_),
-            key=lambda x: x[1],
-            reverse=True
-        )
+    # --- 8. Generación de Explicación con Gen AI ---
+    run_id = mlflow.active_run().info.run_id
+    model_metrics = {'rmse': rmse, 'r2': r2}
+    explanation = generate_explanation(model_metrics, feature_importances)
+    print("Explicación Generada por Gen AI:")
+    print(explanation)
+    # --- 9. Registro en MLflow ---
+    mlflow.log_params(vars(args))
+    mlflow.log_metric("rmse", rmse)
+    mlflow.log_metric("mae", mae)
+    mlflow.log_metric("r2", r2)
+    mlflow.sklearn.log_model(rf, "random_forest_model", input_example=X_train.iloc[:5])
+    mlflow.register_model(model_uri=f"runs:/{run_id}/random_forest_model", name="random_forest_model")
 
-        # --- 8. Generación de Explicación con Gen AI ---
-        model_metrics = {'rmse': rmse, 'r2': r2}
-        explanation = generate_explanation(model_metrics, feature_importances)
-        print("Explicación Generada por Gen AI:")
-        print(explanation)
-
-        # --- 9. Registro en MLflow ---
-        mlflow.log_params(vars(args))
-        mlflow.log_metric("rmse", rmse)
-        mlflow.log_metric("mae", mae)
-        mlflow.log_metric("r2", r2)
-        mlflow.sklearn.log_model(rf, "random_forest_model", input_example=X_train.iloc[:5])
-        mlflow.register_model(model_uri=mlflow.get_artifact_uri("random_forest_model"), name="random_forest_model")
-
-        # Registrar la explicación generada
-        mlflow.log_text(explanation, "model_explanation.txt")
+    # Registrar la explicación generada
+    mlflow.log_text(explanation, "model_explanation.txt")

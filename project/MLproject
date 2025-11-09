@@ -1,7 +1,8 @@
 name: wine_quality_predictor
 
 environments:
-  - conda.yaml
+  #- conda.yaml
+  - source venv/bin/activate && pip install -r requirements.txt
 
 entry_points:
   main:
