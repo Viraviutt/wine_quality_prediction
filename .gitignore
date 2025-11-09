@@ -1,0 +1,30 @@
+.vscode/
+
+# --- Entorno Python ---
+# Excluye la carpeta del entorno virtual (Conda o venv)
+venv/
+.venv/
+__pycache__/
+./project/__pycache__/
+*.pyc
+*.egg-info/
+
+# --- Datos y Configuraciones Sensibles ---
+# Archivos de configuración de claves API/tokens
+.env
+*.key
+*.pem
+
+# --- MLOPS: Artefactos y Base de Datos (MLflow) ---
+# Directorio donde MLflow guarda métricas, parámetros y los modelos binarios (artifacts).
+# Este directorio puede volverse muy grande y no debe versionarse en Git.
+mlruns/ 
+./project/mlruns/
+
+# La base de datos local para el Model Registry.
+# Solo se usa localmente y puede cambiar con frecuencia.
+mlflow.db
+
+# --- JUPYTER / NOTEBOOKS ---
+# Archivos temporales generados por notebooks
+.ipynb_checkpoints/

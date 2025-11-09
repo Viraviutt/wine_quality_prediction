@@ -1,0 +1,17 @@
+name: wine-mlops-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.14
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - pip:
+    - mlflow
+    - gradio
+    - wheel
+    - uvicorn
+    - python-dotenv
+    - openai
