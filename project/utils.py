@@ -1,7 +1,4 @@
 import pandas as pd
-import sys
-sys.path.append('../project')  # ruta relativa o absoluta
-import utils
 
 def save_name_columns(df: pd.DataFrame) -> list:
     return df.columns.tolist()[0].replace(';"', ';').replace('";', ';').strip('"').split(';')
@@ -17,3 +14,9 @@ def change_dtype(df: pd.DataFrame) -> pd.DataFrame:
     for column in df.columns:
         df[column] = pd.to_numeric(df[column], errors='coerce')
     return df
+
+def int_to_float(value: int) -> float:
+    try:
+        return float(value)
+    except ValueError:
+        return None

@@ -5,11 +5,9 @@ import numpy as np
 import os
 import mlflow
 import mlflow.sklearn
+from mlflow.tracking import MlflowClient
 from openai import OpenAI
 from dotenv import load_dotenv
-import sys
-sys.path.append('../project')  # ruta relativa o absoluta
-import utils
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
@@ -73,11 +71,7 @@ def generate_explanation(model_metrics, feature_importances):
         return "Explicación Gen AI no disponible debido a un error de conexión o API Key."
 
 # --- 1. Carga del dataset ---
-df = pd.read_csv("../data/winequality-white.csv")
-
-df = utils.separate_columns(df)
-
-df = utils.change_dtype(df)
+df = pd.read_csv("../data/winequality-white.csv", sep=";")
 
 # Dividir datos
 X = df.drop('quality', axis=1)
@@ -147,7 +141,16 @@ if __name__ == "__main__":
     mlflow.log_metric("mae", mae)
     mlflow.log_metric("r2", r2)
     mlflow.sklearn.log_model(rf, "random_forest_model", input_example=X_train.iloc[:5])
-    mlflow.register_model(model_uri=f"runs:/{run_id}/random_forest_model", name="random_forest_model")
+    version = mlflow.register_model(model_uri=f"runs:/{run_id}/random_forest_model", name="random_forest_model")
+
+    client = MlflowClient()
+    client.set_model_version_tag(
+        name="random_forest_model",
+        version=version.version,
+        key="status",
+        value="stagging"
+    )
+
 
     # Registrar la explicación generada
     mlflow.log_text(explanation, "model_explanation.txt")

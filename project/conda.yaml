@@ -5,13 +5,13 @@ channels:
 dependencies:
   - python=3.11.14
   - pip
-  - numpy
-  - pandas
-  - scikit-learn
+  - numpy=1.26.4
+  - pandas=2.3.3
+  - scikit-learn=1.7.2
   - pip:
-    - mlflow
-    - gradio
-    - wheel
-    - uvicorn
-    - python-dotenv
-    - openai
+    - mlflow==3.6.0
+    - gradio==5.49.1
+    - wheel==0.44.0
+    - uvicorn==0.30.6
+    - python-dotenv==1.0.1
+    - openai==2.7.1

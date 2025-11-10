@@ -1,4 +1,10 @@
 .vscode/
+Informe tarea.docx
+Informe.docx
+Informe.odt
+Informe.pdf
+Semana_9.zip
+Entregable/
 
 # --- Entorno Python ---
 # Excluye la carpeta del entorno virtual (Conda o venv)
@@ -8,6 +14,9 @@ __pycache__/
 ./project/__pycache__/
 *.pyc
 *.egg-info/
+./gradio_app/__pycache__/
+./gradio_app/mlruns
+./gradio_app/requirements.lock.txt
 
 # --- Datos y Configuraciones Sensibles ---
 # Archivos de configuración de claves API/tokens

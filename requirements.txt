@@ -1,3 +1,5 @@
 openai==2.7.1
 pandas==2.3.3
 mlflow==3.6.0
+gradio==5.49.1
+google-generative-ai==0.8.5
